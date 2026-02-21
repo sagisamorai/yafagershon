@@ -1,25 +1,17 @@
 import Link from "next/link";
 import Image from "next/image";
-import { ChefHat, Sparkles, TrendingUp, ArrowLeft } from "lucide-react";
+import { ChefHat, Sparkles, ArrowLeft } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import RecipeCard from "@/components/recipes/RecipeCard";
 import ViewTracker from "@/components/tracking/ViewTracker";
 
 export default async function HomePage() {
-  const [newRecipes, popularRecipes] = await Promise.all([
-    prisma.recipe.findMany({
-      where: { status: "PUBLISHED" },
-      include: { category: true },
-      orderBy: { createdAt: "desc" },
-      take: 6,
-    }),
-    prisma.recipe.findMany({
-      where: { status: "PUBLISHED" },
-      include: { category: true },
-      orderBy: { viewCount: "desc" },
-      take: 6,
-    }),
-  ]);
+  const newRecipes = await prisma.recipe.findMany({
+    where: { status: "PUBLISHED" },
+    include: { category: true },
+    orderBy: { createdAt: "desc" },
+    take: 6,
+  });
 
   return (
     <>
@@ -69,25 +61,6 @@ export default async function HomePage() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {newRecipes.map((recipe) => (
-              <RecipeCard key={recipe.id} recipe={recipe} />
-            ))}
-          </div>
-        </section>
-      )}
-
-      {popularRecipes.length > 0 && (
-        <section className="container-page">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-2">
-              <TrendingUp className="w-6 h-6 text-primary-500" />
-              <h2 className="text-2xl font-bold text-stone-800">הכי פופולריים</h2>
-            </div>
-            <Link href="/recipes?sort=popular" className="text-primary-600 hover:text-primary-700 text-sm font-medium">
-              הצג הכל
-            </Link>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {popularRecipes.map((recipe) => (
               <RecipeCard key={recipe.id} recipe={recipe} />
             ))}
           </div>
