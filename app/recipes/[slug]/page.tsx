@@ -17,8 +17,9 @@ interface PageProps {
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const { slug } = await params;
-  const recipe = await prisma.recipe.findUnique({
+  const { slug: rawSlug } = await params;
+  const slug = decodeURIComponent(rawSlug);
+  const recipe = await prisma.recipe.findFirst({
     where: { slug, status: "PUBLISHED" },
   });
   if (!recipe) return { title: "מתכון לא נמצא" };
@@ -34,8 +35,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 export default async function RecipePage({ params }: PageProps) {
-  const { slug } = await params;
-  const recipe = await prisma.recipe.findUnique({
+  const { slug: rawSlug } = await params;
+  const slug = decodeURIComponent(rawSlug);
+  const recipe = await prisma.recipe.findFirst({
     where: { slug, status: "PUBLISHED" },
     include: {
       category: true,
