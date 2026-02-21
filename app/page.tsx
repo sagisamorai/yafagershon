@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { ChefHat, Sparkles, TrendingUp, ArrowLeft } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import RecipeCard from "@/components/recipes/RecipeCard";
@@ -27,8 +28,15 @@ export default async function HomePage() {
       <section className="bg-gradient-to-bl from-primary-50 via-white to-amber-50 py-16 sm:py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 text-center">
           <div className="flex justify-center mb-6">
-            <div className="w-20 h-20 rounded-full bg-primary-100 flex items-center justify-center">
-              <ChefHat className="w-10 h-10 text-primary-600" />
+            <div className="w-28 h-28 rounded-full overflow-hidden shadow-lg border-4 border-primary-200">
+              <Image
+                src="/yafa-profile.png"
+                alt="יפה - המטבח של יפה"
+                width={112}
+                height={112}
+                className="w-full h-full object-cover scale-[1.05]"
+                priority
+              />
             </div>
           </div>
           <h1 className="text-4xl sm:text-5xl font-bold text-stone-800 mb-4">
