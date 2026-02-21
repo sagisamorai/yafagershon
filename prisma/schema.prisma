@@ -1,0 +1,125 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Difficulty {
+  EASY
+  MEDIUM
+  HARD
+}
+
+enum Kashrut {
+  KOSHER
+  NOT_KOSHER
+  DAIRY
+  MEAT
+  PAREVE
+}
+
+enum RecipeStatus {
+  DRAFT
+  PUBLISHED
+}
+
+enum ViewScope {
+  SITE
+  RECIPE
+}
+
+model Category {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  slug      String   @unique
+  recipes   Recipe[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Tag {
+  id      String      @id @default(uuid())
+  name    String      @unique
+  recipes RecipeTag[]
+}
+
+model RecipeTag {
+  recipeId String
+  tagId    String
+  recipe   Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  tag      Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([recipeId, tagId])
+}
+
+model Recipe {
+  id            String             @id @default(uuid())
+  slug          String             @unique
+  title         String
+  description   String
+  imageUrl      String?
+  galleryImages String[]
+  prepTime      Int
+  cookTime      Int
+  difficulty    Difficulty
+  kashrut       Kashrut
+  servings      Int
+  tips          String?
+  allergens     String[]
+  videoUrl      String?
+  status        RecipeStatus       @default(DRAFT)
+  categoryId    String?
+  category      Category?          @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  ingredients   RecipeIngredient[]
+  steps         RecipeStep[]
+  tags          RecipeTag[]
+  viewEvents    ViewEvent[]
+  viewCount     Int                @default(0)
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+
+  @@index([status, createdAt])
+  @@index([categoryId])
+}
+
+model RecipeIngredient {
+  id       String  @id @default(uuid())
+  name     String
+  amount   String
+  unit     String
+  notes    String?
+  order    Int
+  recipeId String
+  recipe   Recipe  @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+
+  @@index([recipeId])
+}
+
+model RecipeStep {
+  id          String  @id @default(uuid())
+  title       String
+  description String
+  time        Int?
+  imageUrl    String?
+  order       Int
+  recipeId    String
+  recipe      Recipe  @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+
+  @@index([recipeId])
+}
+
+model ViewEvent {
+  id        String    @id @default(uuid())
+  scope     ViewScope
+  recipeId  String?
+  recipe    Recipe?   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  viewerKey String
+  createdAt DateTime  @default(now())
+
+  @@index([scope, recipeId, viewerKey, createdAt])
+  @@index([scope, createdAt])
+  @@index([recipeId, createdAt])
+}
