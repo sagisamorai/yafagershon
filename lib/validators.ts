@@ -8,7 +8,7 @@ export const categorySchema = z.object({
 export const ingredientSchema = z.object({
   name: z.string().min(1, "שם המרכיב נדרש"),
   amount: z.string().min(1, "כמות נדרשת"),
-  unit: z.string().min(1, "יחידה נדרשת"),
+  unit: z.string().optional().default(""),
   notes: z.string().optional().default(""),
 });
 
